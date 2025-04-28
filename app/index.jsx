@@ -1,20 +1,15 @@
-import { StyleSheet, TextInput, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, TextInput, Text, View, TouchableOpacity, StatusBar } from 'react-native';
 import { Link } from 'expo-router';
 
 export default function Login() {
-  const handleLogin = () => {
-    // Handle login logic here
-    console.log('Login pressed');
-  };
-
   return (
     <View style={styles.container}>
-      <Text style={styles.logo}>RevNews</Text>
-      <Text style={styles.tag}>Where feedback empowers growth.</Text>
-      {/* <Link href="/homepage"> click me daddy</Link> */}
+      <StatusBar barStyle="default"/>
+      <Text style={styles.logo}>Juntos</Text>
+      <Text style={styles.tag}>Pag-Tropa, Laging Hataw! 🚀🍻</Text>
 
       <TextInput
-        style={[styles.input, {   marginTop: 100}]}
+        style={[styles.input, { marginTop: 100 }]}
         placeholder="Username"
         placeholderTextColor="#ccc"
       />
@@ -26,12 +21,16 @@ export default function Login() {
         secureTextEntry
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
+      {/* Turn button into a Link */}
+      <Link href="/homepage" asChild>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
+      </Link>
 
       <Text style={styles.or}>─────Or─────</Text>
-      <Link style={styles.Sign} href="/homepage">
+
+      <Link style={styles.Sign} href="/signup">
         Sign Up
       </Link>
     </View>
@@ -41,24 +40,25 @@ export default function Login() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2C4E80',
+    color:"#060d20",
+    backgroundColor: '#f9fafe',
     alignItems: 'center',
     justifyContent: 'center',
   },
   logo: {
     marginTop: 60,
-    fontSize: 70,
-    color: '#fff',
+    fontSize: 100,
+    color:"#060d20",
   },
   tag: {
     marginTop: 2,
-    fontSize: 12,
-    color: '#fff',
+    fontSize: 13,
+  color:"#060d20",
   },
   input: {
     width: '90%',
     height: 40,
-    backgroundColor: '#fff',
+    color:"#060d20",
     marginTop: 20,
     paddingLeft: 10,
     borderRadius: 5,
@@ -66,28 +66,28 @@ const styles = StyleSheet.create({
   or: {
     marginTop: 30,
     fontSize: 17,
-    color: '#fff',
+ color:"#060d20",
   },
   Login: {
     fontSize: 20,
     marginTop: 100,
-    color: '#fff',
+color:"#060d20",
   },
   Sign: {
     marginTop: 40,
-    color: '#fff',
+color:"#060d20",
     textDecorationLine: 'underline', // Adds the underline
   },
   button: {
     marginTop: 20,
-    backgroundColor: '#fff',
+    backgroundColor:"#3c90da",
     paddingVertical: 10,
     paddingHorizontal: 50,
     borderRadius: 5,
   },
   buttonText: {
     fontSize: 16,
-    color: '#2C4E80',
+    color: '#f9fafe',
     textAlign: 'center',
   },
 });
