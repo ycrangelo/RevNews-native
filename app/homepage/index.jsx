@@ -17,9 +17,14 @@ export default function Homepage() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.wrapContent}>
           <View style={styles.content}>
-            <Image source={require('../../assets/icon-profile.png')} style={{ width: 50, height: 50 }} />
-            <Text style={{ textAlign: 'center' }}>Yocor, Angelo</Text>
-          </View>
+          <View style={styles.contentHeader}>
+             <Image source={require('../../assets/icon-profile.png')} style={{ width: 50, height: 50 }} />
+             <Text style={{ textAlign: 'center' }}>Yocor, Angelo</Text>
+       </View>
+       <View>
+        <Text style={{ marginTop:10  }}>Mabagal ang Kotse ko</Text>
+       </View>
+         </View>
         </View>
       </ScrollView>
     </View>
@@ -49,14 +54,16 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   content: {
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    width: '100%',
-    alignItems: 'center',
     padding: 10,
    backgroundColor: '#f9fafe',
    borderWidth: 1,
    borderRadius:10
+ },
+ contentHeader: {
+    justifyContent: 'space-between',
+  flexDirection: 'row',
+  width: '100%',
+   alignItems: 'center',
   },
   wrapContent: {
    backgroundColor: '#f9fafe',
