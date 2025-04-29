@@ -4,70 +4,19 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Link } from 'expo-router'
 import { useState } from 'react';
-import * as ImagePicker from 'expo-image-picker';
+import Navbar from "../components/navbar/index"
 
 
-
-export default function AddContent() {
-
-  const [image, setImage] = useState(null);
-
-  const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images', 'videos'],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-
-    console.log(result);
-
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-    }
-  };
- 
- 
+export default function Profile() {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="default" />
-      <View style={styles.navbar}>
-        <Text style={styles.logo}>Juntos</Text>
-        <TouchableOpacity>
-          <Image 
-            source={require('../../assets/icon-profile.png')} // Make sure this path is correct
-            style={styles.image}
-          />
-        </TouchableOpacity>
-      </View>
+     <Navbar/>
 
 <ScrollView contentContainerStyle={styles.scrollContent}>
-  <View style={styles.postCard}>
-    <Text style={styles.postTitle}>Create a Post</Text>
-    
-    <TextInput
-      style={styles.input}
-      placeholder="What's in your mind?"
-      placeholderTextColor="#aaa"
-      multiline
-    />
-
-          <View>
-            <TouchableOpacity style={styles.customButton} onPress={pickImage}>
-      <Text style={styles.customButtonText}>Upload an Image</Text>
-    </TouchableOpacity>
-    </View>
-
-    {image && (
-            <Image source={{ uri: image }} style={styles.imageSelected} />
-            
-          )}
-              <TouchableOpacity style={styles.customButton} onPress={pickImage}>
-      <Text style={styles.customButtonText}>Post</Text>
-    </TouchableOpacity>
-        </View>
-        
+     <Text>
+      profile
+    </Text>
 </ScrollView>
 
     </View>

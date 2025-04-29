@@ -3,27 +3,19 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Link } from 'expo-router'
+import Navbar from "../components/navbar/index"
 
 export default function Homepage() {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="default" />
-      <View style={styles.navbar}>
-        <Text style={styles.logo}>Juntos</Text>
-        <TouchableOpacity>
-          <Image 
-            source={require('../../assets/icon-profile.png')} // Make sure this path is correct
-            style={styles.image}
-          />
-        </TouchableOpacity>
-      </View>
-
+      <Navbar/>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.wrapContent}>
           <View style={styles.content}>
           <View style={styles.contentHeader}>
-             <Image source={require('../../assets/icon-profile.png')} style={{ width: 50, height: 50 }} />
-             <Text style={{ textAlign: 'center', fontWeight:'100' }}>Yocor, Angelo</Text>
+            <Image source={require('../../assets/icon-profile.png')} style={{ width: 50, height: 50 }} />
+            <Text style={{ textAlign: 'center', fontWeight:'100' }}>Naoi Rei</Text>
        </View>
           <View>
             <Text style={{ marginTop: 10 }}>Mabagal ang Kotse ko</Text>
@@ -58,7 +50,7 @@ export default function Homepage() {
           <View style={styles.content}>
           <View style={styles.contentHeader}>
              <Image source={require('../../assets/icon-profile.png')} style={{ width: 50, height: 50 }} />
-             <Text style={{ textAlign: 'center', fontWeight:'100' }}>Yocor, Angelo</Text>
+             <Text style={{ textAlign: 'center', fontWeight:'100' }}>Naoi Rei</Text>
        </View>
           <View>
             <Text style={{ marginTop: 10 }}>Mabagal ang Kotse ko</Text>
@@ -94,7 +86,7 @@ export default function Homepage() {
           <View style={styles.content}>
           <View style={styles.contentHeader}>
              <Image source={require('../../assets/icon-profile.png')} style={{ width: 50, height: 50 }} />
-             <Text style={{ textAlign: 'center', fontWeight:'100' }}>Yocor, Angelo</Text>
+             <Text style={{ textAlign: 'center', fontWeight:'100' }}>Naoi Rei</Text>
        </View>
           <View>
             <Text style={{ marginTop: 10 }}>Mabagal ang Kotse ko</Text>
@@ -130,7 +122,7 @@ export default function Homepage() {
           <View style={styles.content}>
           <View style={styles.contentHeader}>
              <Image source={require('../../assets/icon-profile.png')} style={{ width: 50, height: 50 }} />
-             <Text style={{ textAlign: 'center', fontWeight:'100' }}>Yocor, Angelo</Text>
+             <Text style={{ textAlign: 'center', fontWeight:'100' }}>Naoi Rei</Text>
        </View>
           <View>
             <Text style={{ marginTop: 10 }}>Mabagal ang Kotse ko</Text>
@@ -160,13 +152,11 @@ export default function Homepage() {
           </View>
          </View>
         </View>
-
-
                 <View style={styles.wrapContent}>
           <View style={styles.content}>
           <View style={styles.contentHeader}>
              <Image source={require('../../assets/icon-profile.png')} style={{ width: 50, height: 50 }} />
-             <Text style={{ textAlign: 'center', fontWeight:'100' }}>Yocor, Angelo</Text>
+             <Text style={{ textAlign: 'center', fontWeight:'100' }}>Naoi Rei</Text>
        </View>
           <View>
             <Text style={{ marginTop: 10 }}>Mabagal ang Kotse ko</Text>
