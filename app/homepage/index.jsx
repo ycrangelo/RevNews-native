@@ -1,4 +1,7 @@
 import { StyleSheet, Text, View, ScrollView, StatusBar, TouchableOpacity, Image } from 'react-native';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function Homepage() {
   return (
@@ -19,14 +22,185 @@ export default function Homepage() {
           <View style={styles.content}>
           <View style={styles.contentHeader}>
              <Image source={require('../../assets/icon-profile.png')} style={{ width: 50, height: 50 }} />
-             <Text style={{ textAlign: 'center' }}>Yocor, Angelo</Text>
+             <Text style={{ textAlign: 'center', fontWeight:'100' }}>Yocor, Angelo</Text>
        </View>
-       <View>
-        <Text style={{ marginTop:10  }}>Mabagal ang Kotse ko</Text>
+          <View>
+            <Text style={{ marginTop: 10 }}>Mabagal ang Kotse ko</Text>
+            <View style={{ alignItems: "center", overflow: 'hidden', borderRadius: 10 }}>
+              <Image 
+                source={require('../../assets/picContent.jpg')} 
+                style={{ width: 350, height: 380 }}
+              />
+              </View>
+              <View style={{ marginTop: 10, flexDirection: "row", justifyContent: 'space-between' }}>
+              <View style={{ flexDirection: "row", gap: 10 }}>
+                  <View style={{ flexDirection: "row", gap: 5 }}>
+                  <TouchableOpacity onPress={() => console.log('Liked!')}>
+                  <AntDesign name="hearto" size={24} color="black" />
+                    </TouchableOpacity>
+                    <Text>13</Text>
+                </View>
+                <TouchableOpacity onPress={() => console.log('Commented!')}>
+                  <FontAwesome5 name="comment-dots" size={24} color="black" />
+                </TouchableOpacity>
+              </View>
+
+              <TouchableOpacity onPress={() => console.log('Saved!')}>
+                <MaterialIcons name="save-alt" size={26} color="black" />
+              </TouchableOpacity>
+            </View>
+          </View>
+         </View>
+        </View>
+
+                <View style={styles.wrapContent}>
+          <View style={styles.content}>
+          <View style={styles.contentHeader}>
+             <Image source={require('../../assets/icon-profile.png')} style={{ width: 50, height: 50 }} />
+             <Text style={{ textAlign: 'center', fontWeight:'100' }}>Yocor, Angelo</Text>
        </View>
+          <View>
+            <Text style={{ marginTop: 10 }}>Mabagal ang Kotse ko</Text>
+            <View style={{ alignItems: "center", overflow: 'hidden', borderRadius: 10 }}>
+              <Image 
+                source={require('../../assets/picContent.jpg')} 
+                style={{ width: 350, height: 380 }}
+              />
+              </View>
+              <View style={{ marginTop: 10, flexDirection: "row", justifyContent: 'space-between' }}>
+              <View style={{ flexDirection: "row", gap: 10 }}>
+                  <View style={{ flexDirection: "row", gap: 5 }}>
+                  <TouchableOpacity onPress={() => console.log('Liked!')}>
+                  <AntDesign name="hearto" size={24} color="black" />
+                    </TouchableOpacity>
+                    <Text>13</Text>
+                </View>
+                <TouchableOpacity onPress={() => console.log('Commented!')}>
+                  <FontAwesome5 name="comment-dots" size={24} color="black" />
+                </TouchableOpacity>
+              </View>
+
+              <TouchableOpacity onPress={() => console.log('Saved!')}>
+                <MaterialIcons name="save-alt" size={26} color="black" />
+              </TouchableOpacity>
+            </View>
+          </View>
+         </View>
+        </View>
+
+
+                <View style={styles.wrapContent}>
+          <View style={styles.content}>
+          <View style={styles.contentHeader}>
+             <Image source={require('../../assets/icon-profile.png')} style={{ width: 50, height: 50 }} />
+             <Text style={{ textAlign: 'center', fontWeight:'100' }}>Yocor, Angelo</Text>
+       </View>
+          <View>
+            <Text style={{ marginTop: 10 }}>Mabagal ang Kotse ko</Text>
+            <View style={{ alignItems: "center", overflow: 'hidden', borderRadius: 10 }}>
+              <Image 
+                source={require('../../assets/picContent.jpg')} 
+                style={{ width: 350, height: 380 }}
+              />
+              </View>
+              <View style={{ marginTop: 10, flexDirection: "row", justifyContent: 'space-between' }}>
+              <View style={{ flexDirection: "row", gap: 10 }}>
+                  <View style={{ flexDirection: "row", gap: 5 }}>
+                  <TouchableOpacity onPress={() => console.log('Liked!')}>
+                  <AntDesign name="hearto" size={24} color="black" />
+                    </TouchableOpacity>
+                    <Text>13</Text>
+                </View>
+                <TouchableOpacity onPress={() => console.log('Commented!')}>
+                  <FontAwesome5 name="comment-dots" size={24} color="black" />
+                </TouchableOpacity>
+              </View>
+
+              <TouchableOpacity onPress={() => console.log('Saved!')}>
+                <MaterialIcons name="save-alt" size={26} color="black" />
+              </TouchableOpacity>
+            </View>
+          </View>
+         </View>
+        </View>
+
+
+                <View style={styles.wrapContent}>
+          <View style={styles.content}>
+          <View style={styles.contentHeader}>
+             <Image source={require('../../assets/icon-profile.png')} style={{ width: 50, height: 50 }} />
+             <Text style={{ textAlign: 'center', fontWeight:'100' }}>Yocor, Angelo</Text>
+       </View>
+          <View>
+            <Text style={{ marginTop: 10 }}>Mabagal ang Kotse ko</Text>
+            <View style={{ alignItems: "center", overflow: 'hidden', borderRadius: 10 }}>
+              <Image 
+                source={require('../../assets/picContent.jpg')} 
+                style={{ width: 350, height: 380 }}
+              />
+              </View>
+              <View style={{ marginTop: 10, flexDirection: "row", justifyContent: 'space-between' }}>
+              <View style={{ flexDirection: "row", gap: 10 }}>
+                  <View style={{ flexDirection: "row", gap: 5 }}>
+                  <TouchableOpacity onPress={() => console.log('Liked!')}>
+                  <AntDesign name="hearto" size={24} color="black" />
+                    </TouchableOpacity>
+                    <Text>13</Text>
+                </View>
+                <TouchableOpacity onPress={() => console.log('Commented!')}>
+                  <FontAwesome5 name="comment-dots" size={24} color="black" />
+                </TouchableOpacity>
+              </View>
+
+              <TouchableOpacity onPress={() => console.log('Saved!')}>
+                <MaterialIcons name="save-alt" size={26} color="black" />
+              </TouchableOpacity>
+            </View>
+          </View>
+         </View>
+        </View>
+
+
+                <View style={styles.wrapContent}>
+          <View style={styles.content}>
+          <View style={styles.contentHeader}>
+             <Image source={require('../../assets/icon-profile.png')} style={{ width: 50, height: 50 }} />
+             <Text style={{ textAlign: 'center', fontWeight:'100' }}>Yocor, Angelo</Text>
+       </View>
+          <View>
+            <Text style={{ marginTop: 10 }}>Mabagal ang Kotse ko</Text>
+            <View style={{ alignItems: "center", overflow: 'hidden', borderRadius: 10 }}>
+              <Image 
+                source={require('../../assets/picContent.jpg')} 
+                style={{ width: 350, height: 380 }}
+              />
+              </View>
+              <View style={{ marginTop: 10, flexDirection: "row", justifyContent: 'space-between' }}>
+              <View style={{ flexDirection: "row", gap: 10 }}>
+                  <View style={{ flexDirection: "row", gap: 5 }}>
+                  <TouchableOpacity onPress={() => console.log('Liked!')}>
+                  <AntDesign name="hearto" size={24} color="black" />
+                    </TouchableOpacity>
+                    <Text>13</Text>
+                </View>
+                <TouchableOpacity onPress={() => console.log('Commented!')}>
+                  <FontAwesome5 name="comment-dots" size={24} color="black" />
+                </TouchableOpacity>
+              </View>
+
+              <TouchableOpacity onPress={() => console.log('Saved!')}>
+                <MaterialIcons name="save-alt" size={26} color="black" />
+              </TouchableOpacity>
+            </View>
+          </View>
          </View>
         </View>
       </ScrollView>
+        <View style={styles.addContent}>
+        <TouchableOpacity onPress={() => console.log('add Content!')}>
+         <MaterialIcons name="add-circle-outline" size={32} color="black" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -36,36 +210,40 @@ const styles = StyleSheet.create({
     flex: 1, // This ensures the view takes up the entire screen
     backgroundColor: '#f9fafe', // Set background color for the entire screen
   },
+  addContent: {
+    alignItems: 'center',
+    width: '100%',
+    padding: 5,
+  },
   navbar: {
     width: '100%',
     justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',
-   padding: 10,
-    borderBottomWidth:1
+   padding: 5,
   },
   logo: {
     fontSize: 30,
     color: "#060d20",
   },
   image: {
-    width: 30,
-    height: 30,
+    width: 35,
+    height: 35,
     resizeMode: 'contain',
   },
   content: {
-    padding: 10,
+  padding: 10,
    backgroundColor: '#f9fafe',
    borderWidth: 1,
    borderRadius:10
  },
  contentHeader: {
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
   flexDirection: 'row',
-  width: '100%',
    alignItems: 'center',
   },
   wrapContent: {
+  width: '95%',
    backgroundColor: '#f9fafe',
    marginHorizontal: 10,
    marginTop: 10,
