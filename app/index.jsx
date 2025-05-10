@@ -1,13 +1,22 @@
-import { useState } from 'react';
-import { StyleSheet, TextInput, Text, View, TouchableOpacity, StatusBar, Alert, ActivityIndicator } from 'react-native';
-import { Link, useRouter } from 'expo-router';
 import axios from 'axios';
+import { Link, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { AppProvider, useAppContext } from './context/AppContext';
 
-export default function Login() {
+function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { updateUserData, isLoggedIn } = useAppContext();
+
+  // Check if user is already logged in
+  useEffect(() => {
+    if (isLoggedIn) {
+      router.push('/homepage');
+    }
+  }, [isLoggedIn]);
 
   const handleLogin = async () => {
     if (!username || !password) {
@@ -24,6 +33,12 @@ export default function Login() {
       });
 
       if (response.data.message === 'Login successful') {
+        // Store user data in context
+        updateUserData({
+          ...response.data.user,
+          username: response.data.user.username,
+          profilePicture: response.data.user.profilePicture
+        });
         router.push('/homepage');
       }
     } catch (error) {
@@ -128,3 +143,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+export default function App() {
+  return (
+    <AppProvider>
+      <Login />
+    </AppProvider>
+  );
+}
