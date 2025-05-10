@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { AppProvider, useAppContext } from './context/AppContext';
 
+
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
