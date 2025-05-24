@@ -1,13 +1,68 @@
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, Text, View, TouchableOpacity } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
+import {
+  StyleSheet,
+  TextInput,
+  Text,
+  View,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
 
 export default function Login() {
-  const [selected, setSelected] = useState('Male'); // Changed initial state to match one of the options
+  const [selected, setSelected] = useState('Male');
+  const [fullname, setFullname] = useState('');
+  const [contactNumber, setContactNumber] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  const handleLogin = () => {
-    // Handle login logic here
-    console.log('Login pressed');
+  const handleLogin = async () => {
+    const payload = {
+      username,
+      fullname,
+      gender: selected,
+      contactNumber,
+      password,
+    };
+  
+    setLoading(true);
+  
+    try {
+      const response = await fetch('https://backendsabay.onrender.com/api/users/singup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+  
+      const contentType = response.headers.get('content-type');
+  
+      if (contentType && contentType.includes('application/json')) {
+        const data = await response.json();
+        if (response.ok) {
+          Alert.alert('Success', ' created successfully!, Continue logging the account');
+          router.push('/');
+          console.log('User created:', data);
+        } else {
+          Alert.alert('Signup Failed', data.error || 'Something went wrong');
+          console.error('Signup failed:', data.error);
+        }
+      } else {
+        const text = await response.text();
+        console.error('Non-JSON response:', text);
+        Alert.alert('Server Error', 'Received unexpected response from server.');
+      }
+  
+    } catch (error) {
+      Alert.alert('Error', 'Network or server issue');
+      console.error('Error during signup:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const RadioButton = ({ label, value, selected, onPress }) => (
@@ -18,9 +73,10 @@ export default function Login() {
   );
 
   return (
-   <View style={styles.container}>
-    <Text style={styles.logo}>Sign Up</Text>
-          <View style={styles.radioGroupContainer}>
+    <View style={styles.container}>
+      <Text style={styles.logo}>Sign Up</Text>
+
+      <View style={styles.radioGroupContainer}>
         <Text style={styles.gender}>Gender</Text>
         <View style={styles.radioButtonsContainer}>
           {['Male', 'Female'].map(option => (
@@ -34,50 +90,59 @@ export default function Login() {
           ))}
         </View>
       </View>
+
       <TextInput
         style={styles.input}
         placeholder="Full Name"
         placeholderTextColor="#ccc"
-    />
-          <TextInput
+        value={fullname}
+        onChangeText={setFullname}
+      />
+      <TextInput
         style={styles.input}
         placeholder="Contact #"
         placeholderTextColor="#ccc"
+        value={contactNumber}
+        onChangeText={setContactNumber}
       />
-    
       <TextInput
         style={styles.input}
         placeholder="Username"
         placeholderTextColor="#ccc"
+        value={username}
+        onChangeText={setUsername}
       />
-
       <TextInput
         style={styles.input}
         placeholder="Password"
         placeholderTextColor="#ccc"
         secureTextEntry
+        value={password}
+        onChangeText={setPassword}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Save</Text>
+      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+        {loading ? (
+          <ActivityIndicator color="#f9fafe" />
+        ) : (
+          <Text style={styles.buttonText}>Save</Text>
+        )}
       </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-   logo: {
+  logo: {
     marginTop: 30,
-  fontSize: 50,
-    marginBottom:30,
-color:"#060d20",
+    fontSize: 50,
+    marginBottom: 30,
+    color: "#060d20",
   },
   container: {
     flex: 1,
-    color: "#060d20",
     backgroundColor: '#f9fafe',
     alignItems: 'center',
-
   },
   radioGroupContainer: {
     width: '90%',
@@ -85,7 +150,7 @@ color:"#060d20",
   },
   radioButtonsContainer: {
     flexDirection: 'column',
-    alignItems: 'flex-start', // This aligns the radio buttons to the left
+    alignItems: 'flex-start',
     marginTop: 5,
   },
   radioContainer: {
@@ -95,7 +160,7 @@ color:"#060d20",
   },
   gender: {
     color: "#060d20",
-    alignSelf: 'flex-start', // Aligns the gender text to the left
+    alignSelf: 'flex-start',
   },
   radioCircle: {
     height: 20,
@@ -116,7 +181,6 @@ color:"#060d20",
     paddingLeft: 10,
     borderRadius: 10,
     borderWidth: 1,
-    // borderColor: '#555',
     backgroundColor: '#f9fafe',
   },
   button: {
