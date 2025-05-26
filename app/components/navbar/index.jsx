@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
   },
   navbar: {
     width: '100%',
+    marginTop:25,
     justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',

@@ -34,12 +34,13 @@ function Login() {
       });
 
       if (response.data.message === 'Login successful') {
-        // Store user data in context
-        updateUserData({
-          ...response.data.user,
+        const userData = {
+          userID: response.data.user._id,
           username: response.data.user.username,
           profilePicture: response.data.user.profilePicture
-        });
+        };
+        console.log('Login successful, user data:', userData);
+        updateUserData(userData);
         router.push('/homepage');
       }
     } catch (error) {
@@ -92,6 +93,7 @@ function Login() {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 25,
     flex: 1,
     color: "#060d20",
     backgroundColor: '#f9fafe',

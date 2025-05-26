@@ -85,6 +85,7 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   navbar: {
+    marginTop:25,
     width: '100%',
     justifyContent: 'space-between',
     flexDirection: 'row',

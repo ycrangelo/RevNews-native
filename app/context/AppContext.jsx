@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 // Create the context
 const AppContext = createContext();
 
-// Create a custom hook to use the context
+// Custom hook to use the context
 export const useAppContext = () => {
  const context = useContext(AppContext);
  if (!context) {
@@ -13,17 +13,13 @@ export const useAppContext = () => {
  return context;
 };
 
-// Create the provider component
+// Provider component
 export const AppProvider = ({ children }) => {
- // Add your shared state here
- const [userData, setUserData] = useState(null);
- const [theme, setTheme] = useState('light');
- const [isLoading, setIsLoading] = useState(false);
+ const [userID, setUserID] = useState(null);
  const [isLoggedIn, setIsLoggedIn] = useState(false);
  const [username, setUsername] = useState('');
  const [userPicture, setUserPicture] = useState(null);
 
- // Load saved data when app starts
  useEffect(() => {
   loadSavedData();
  }, []);
@@ -35,7 +31,8 @@ export const AppProvider = ({ children }) => {
 
    if (savedUserData && savedLoginState === 'true') {
     const parsedUserData = JSON.parse(savedUserData);
-    setUserData(parsedUserData);
+    console.log('Loading saved user data:', parsedUserData);
+    setUserID(parsedUserData.userID || parsedUserData.id);
     setUsername(parsedUserData.username || '');
     setUserPicture(parsedUserData.profilePicture || null);
     setIsLoggedIn(true);
@@ -45,16 +42,22 @@ export const AppProvider = ({ children }) => {
   }
  };
 
- // Add your shared methods here
  const updateUserData = async (data) => {
   try {
-   setUserData(data);
    if (data) {
+    console.log('Updating user data:', data);
+    setUserID(data.userID || data.id);
     setUsername(data.username || '');
     setUserPicture(data.profilePicture || null);
     setIsLoggedIn(true);
-    // Save to AsyncStorage
-    await AsyncStorage.setItem('userData', JSON.stringify(data));
+
+    const userDataToStore = {
+     userID: data.userID || data.id,
+     username: data.username,
+     profilePicture: data.profilePicture
+    };
+
+    await AsyncStorage.setItem('userData', JSON.stringify(userDataToStore));
     await AsyncStorage.setItem('isLoggedIn', 'true');
    }
   } catch (error) {
@@ -64,11 +67,10 @@ export const AppProvider = ({ children }) => {
 
  const logout = async () => {
   try {
-   setUserData(null);
+   setUserID(null);
    setUsername('');
    setUserPicture(null);
    setIsLoggedIn(false);
-   // Clear AsyncStorage
    await AsyncStorage.removeItem('userData');
    await AsyncStorage.removeItem('isLoggedIn');
   } catch (error) {
@@ -97,19 +99,13 @@ export const AppProvider = ({ children }) => {
   setIsLoading(loading);
  };
 
- // The value that will be shared across your app
  const value = {
-  userData,
-  theme,
-  isLoading,
+  userID,
   isLoggedIn,
   username,
   userPicture,
   updateUserData,
-  updateUserPicture,
   logout,
-  toggleTheme,
-  setLoading,
  };
 
  return (
@@ -117,4 +113,7 @@ export const AppProvider = ({ children }) => {
    {children}
   </AppContext.Provider>
  );
-}; 
+};
+
+// Add default export
+export default AppProvider;
