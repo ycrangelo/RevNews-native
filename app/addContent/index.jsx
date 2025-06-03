@@ -1,34 +1,82 @@
-import { StyleSheet, Text, View, ScrollView, StatusBar, TouchableOpacity, Image,Button,TextInput } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, StatusBar, TouchableOpacity, Image, TextInput } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { Link } from 'expo-router'
 import { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
-
-
+import * as FileSystem from 'expo-file-system';
+import { encode } from 'base-64';
 
 export default function AddContent() {
-
   const [image, setImage] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [caption, setCaption] = useState('');
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images', 'videos'],
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
     });
 
-    console.log(result);
-
     if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
   };
- 
- 
+
+  const uploadImage = async () => {
+    if (!image) return;
+  
+    setUploading(true);
+    
+    try {
+      const fileInfo = await FileSystem.getInfoAsync(image);
+      const fileType = image.split('.').pop();
+      const mimeType = `image/${fileType === 'jpg' ? 'jpeg' : fileType}`;
+  
+      const formData = new FormData();
+      // React Native requires a slightly different format for file uploads
+      formData.append('file', {
+        uri: image,
+        name: `upload.${fileType}`,
+        type: mimeType
+      });
+  
+      const response = await fetch('https://backendsabay.onrender.com/api/uploadthing', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Accept': 'application/json',
+        },
+      });
+  
+      // Handle response
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || 'Upload failed');
+      }
+  
+      const result = await response.json();
+      console.log('Upload success:', result);
+      return result.url;
+    } catch (error) {
+      console.error('Upload error:', error);
+      throw error;
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handlePost = async () => {
+    if (image) {
+      await uploadImage();
+    }
+    // Here you would also handle the caption and other post data
+    // and send it to your backend along with the image URL
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="default" />
@@ -36,40 +84,52 @@ export default function AddContent() {
         <Text style={styles.logo}>Juntos</Text>
         <TouchableOpacity>
           <Image 
-            source={require('../../assets/icon-profile.png')} // Make sure this path is correct
+            source={require('../../assets/icon-profile.png')}
             style={styles.image}
           />
         </TouchableOpacity>
       </View>
 
-<ScrollView contentContainerStyle={styles.scrollContent}>
-  <View style={styles.postCard}>
-    <Text style={styles.postTitle}>Create a Post</Text>
-    
-    <TextInput
-      style={styles.input}
-      placeholder="What's in your mind?"
-      placeholderTextColor="#aaa"
-      multiline
-    />
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.postCard}>
+          <Text style={styles.postTitle}>Create a Post</Text>
+          
+          <TextInput
+            style={styles.input}
+            placeholder="What's in your mind?"
+            placeholderTextColor="#aaa"
+            multiline
+            value={caption}
+            onChangeText={setCaption}
+          />
 
           <View>
-            <TouchableOpacity style={styles.customButton} onPress={pickImage}>
-      <Text style={styles.customButtonText}>Upload an Image</Text>
-    </TouchableOpacity>
-    </View>
+            <TouchableOpacity 
+              style={styles.customButton} 
+              onPress={pickImage}
+              disabled={uploading}
+            >
+              <Text style={styles.customButtonText}>
+                {uploading ? 'Uploading...' : 'Upload an Image'}
+              </Text>
+            </TouchableOpacity>
+          </View>
 
-    {image && (
+          {image && (
             <Image source={{ uri: image }} style={styles.imageSelected} />
-            
           )}
-              <TouchableOpacity style={styles.customButton} onPress={pickImage}>
-      <Text style={styles.customButtonText}>Post</Text>
-    </TouchableOpacity>
-        </View>
-        
-</ScrollView>
 
+          <TouchableOpacity 
+            style={[styles.customButton, uploading && styles.disabledButton]} 
+            onPress={handlePost}
+            disabled={uploading}
+          >
+            <Text style={styles.customButtonText}>
+              {uploading ? 'Posting...' : 'Post'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </View>
   );
 }
