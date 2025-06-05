@@ -1,34 +1,89 @@
-import { StyleSheet, Text, View, ScrollView, StatusBar, TouchableOpacity, Image,Button,TextInput } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, StatusBar, TouchableOpacity, Image, TextInput, Alert } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { Link } from 'expo-router'
 import { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
-
-
+import * as FileSystem from 'expo-file-system'; // For reading file data
 
 export default function AddContent() {
-
   const [image, setImage] = useState(null);
+  const [caption, setCaption] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
+  // Pick an image from the gallery
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images', 'videos'],
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
     });
 
-    console.log(result);
-
     if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
   };
- 
- 
+
+  // Get a pre-signed URL from your backend
+  const getPresignedUrl = async () => {
+    try {
+      const response = await fetch('https://juntosbackend.onrender.com/get-presigned-url');
+      const data = await response.json();
+      return data.url;
+    } catch (error) {
+      console.error("Error fetching presigned URL:", error);
+      throw error;
+    }
+  };
+
+  // Upload image to S3 using the pre-signed URL
+  const uploadImageToS3 = async (presignedUrl, imageUri) => {
+    try {
+      const fileInfo = await FileSystem.getInfoAsync(imageUri);
+      const fileType = fileInfo.uri.split('.').pop();
+
+      const response = await fetch(presignedUrl, {
+        method: 'PUT',
+        body: await FileSystem.readAsStringAsync(imageUri, { encoding: FileSystem.EncodingType.Base64 }),
+        headers: {
+          'Content-Type': `image/${fileType}`,
+        },
+      });
+
+      if (response.status !== 200) throw new Error("Upload failed");
+    } catch (error) {
+      console.error("Upload error:", error);
+      throw error;
+    }
+  };
+
+  // Handle the full upload process
+  const handlePost = async () => {
+    if (!image) {
+      Alert.alert("Please select an image first");
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      // Step 1: Get pre-signed URL from backend
+      const presignedUrl = await getPresignedUrl();
+
+      // Step 2: Upload image to S3
+      await uploadImageToS3(presignedUrl, image);
+
+      Alert.alert("Success", "Your post has been uploaded!");
+      setImage(null);
+      setCaption("");
+    } catch (error) {
+      Alert.alert("Error", "Failed to upload post. Please try again.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="default" />
@@ -36,43 +91,49 @@ export default function AddContent() {
         <Text style={styles.logo}>Juntos</Text>
         <TouchableOpacity>
           <Image 
-            source={require('../../assets/icon-profile.png')} // Make sure this path is correct
+            source={require('../../assets/icon-profile.png')}
             style={styles.image}
           />
         </TouchableOpacity>
       </View>
 
-<ScrollView contentContainerStyle={styles.scrollContent}>
-  <View style={styles.postCard}>
-    <Text style={styles.postTitle}>Create a Post</Text>
-    
-    <TextInput
-      style={styles.input}
-      placeholder="What's in your mind?"
-      placeholderTextColor="#aaa"
-      multiline
-    />
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.postCard}>
+          <Text style={styles.postTitle}>Create a Post</Text>
+          
+          <TextInput
+            style={styles.input}
+            placeholder="What's in your mind?"
+            placeholderTextColor="#aaa"
+            multiline
+            value={caption}
+            onChangeText={setCaption}
+          />
 
-          <View>
-            <TouchableOpacity style={styles.customButton} onPress={pickImage}>
-      <Text style={styles.customButtonText}>Upload an Image</Text>
-    </TouchableOpacity>
-    </View>
+          <TouchableOpacity style={styles.customButton} onPress={pickImage}>
+            <Text style={styles.customButtonText}>Upload an Image</Text>
+          </TouchableOpacity>
 
-    {image && (
+          {image && (
             <Image source={{ uri: image }} style={styles.imageSelected} />
-            
           )}
-              <TouchableOpacity style={styles.customButton} onPress={pickImage}>
-      <Text style={styles.customButtonText}>Post</Text>
-    </TouchableOpacity>
-        </View>
-        
-</ScrollView>
 
+          <TouchableOpacity 
+            style={[styles.customButton, isUploading && { opacity: 0.7 }]} 
+            onPress={handlePost}
+            disabled={isUploading}
+          >
+            <Text style={styles.customButtonText}>
+              {isUploading ? "Uploading..." : "Post"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </View>
   );
 }
+
+// Keep your existing styles...
 
 const styles = StyleSheet.create({
   container: {

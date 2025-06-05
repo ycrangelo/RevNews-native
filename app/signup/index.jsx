@@ -31,7 +31,7 @@ export default function Login() {
     setLoading(true);
   
     try {
-      const response = await fetch('https://backendsabay.onrender.com/api/users/singup', {
+      const response = await fetch('https://juntosbackend.onrender.com/api/users/singup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

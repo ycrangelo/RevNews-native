@@ -28,7 +28,7 @@ function Login() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('https://backendsabay.onrender.com/api/users/login', {
+      const response = await axios.post('https://juntosbackend.onrender.com/api/users/login', {
         username,
         password,
       });

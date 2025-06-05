@@ -36,7 +36,7 @@ export default function Homepage() {
 
   const fetchPosts = async () => {
     try {
-      const res = await fetch('https://backendsabay.onrender.com/api/post/getAllPost');
+      const res = await fetch('https://juntosbackend.onrender.com/api/post/getAllPost');
       const data = await res.json();
       if (!isNearBottom) {
         setPosts(data);
@@ -69,7 +69,7 @@ export default function Homepage() {
 
   const handleLike = async (postId) => {
     try {
-      const res = await fetch('https://backendsabay.onrender.com/api/post/likePost', {
+      const res = await fetch('https://juntosbackend.onrender.com/api/post/likePost', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ postId }),
@@ -86,7 +86,7 @@ export default function Homepage() {
 
   const handleUnlike = async (postId) => {
     try {
-      const res = await fetch('https://backendsabay.onrender.com/api/post/unlikePost', {
+      const res = await fetch('https://juntosbackend.onrender.com/api/post/unlikePost', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ postId }),
@@ -104,7 +104,7 @@ export default function Homepage() {
   const fetchComments = async (postId) => {
     setLoadingComments(true);
     try {
-      const res = await fetch('https://backendsabay.onrender.com/api/comment/getComments', {
+      const res = await fetch('https://juntosbackend.onrender.com/api/comment/getComments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ postId }),
@@ -121,7 +121,7 @@ export default function Homepage() {
   const sendComment = async () => {
     if (!commentText.trim()) return;
     try {
-      await fetch('https://backendsabay.onrender.com/api/comment/createComment', {
+      await fetch('https://juntosbackend.onrender.com/api/comment/createComment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -146,7 +146,7 @@ export default function Homepage() {
 
   const handleSavePost = async (postId) => {
     try {
-      const res = await fetch('https://backendsabay.onrender.com/api/saves/createSavedPosts', {
+      const res = await fetch('https://juntosbackend.onrender.com/api/saves/createSavedPosts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -165,7 +165,7 @@ export default function Homepage() {
 
   const handleUnsavePost = async (postId) => {
     try {
-      const res = await fetch('https://backendsabay.onrender.com/api/saves/deleteSavedPost', {
+      const res = await fetch('https://juntosbackend.onrender.com/api/saves/deleteSavedPost', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
