@@ -40,18 +40,26 @@ export default function AddContent() {
   // Upload image to S3 using the pre-signed URL
   const uploadImageToS3 = async (presignedUrl, imageUri) => {
     try {
-      const fileInfo = await FileSystem.getInfoAsync(imageUri);
-      const fileType = fileInfo.uri.split('.').pop();
+      // Read the file as binary data (not base64)
+      const fileData = await FileSystem.readAsStringAsync(imageUri, {
+        encoding: FileSystem.EncodingType.Binary
+      });
+
+      // Convert to blob-like format
+      const blob = new Blob([fileData], { type: 'image/jpeg' });
 
       const response = await fetch(presignedUrl, {
         method: 'PUT',
-        body: await FileSystem.readAsStringAsync(imageUri, { encoding: FileSystem.EncodingType.Base64 }),
+        body: blob,
         headers: {
-          'Content-Type': `image/${fileType}`,
+          'Content-Type': 'image/jpeg', // Match what your backend expects
         },
       });
 
-      if (response.status !== 200) throw new Error("Upload failed");
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Upload failed: ${errorText}`);
+      }
     } catch (error) {
       console.error("Upload error:", error);
       throw error;
