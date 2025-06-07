@@ -4,12 +4,13 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
-import * as FileSystem from 'expo-file-system'; // For reading file data
+import * as FileSystem from 'expo-file-system';
 
 export default function AddContent() {
   const [image, setImage] = useState(null);
   const [caption, setCaption] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState(null); // New state for the URL
 
   // Pick an image from the gallery
   const pickImage = async () => {
@@ -40,28 +41,24 @@ export default function AddContent() {
   // Upload image to S3 using the pre-signed URL
   const uploadImageToS3 = async (presignedUrl, imageUri) => {
     try {
-      // Read the file as binary data (not base64)
-      const fileData = await FileSystem.readAsStringAsync(imageUri, {
-        encoding: FileSystem.EncodingType.Binary
-      });
-
-      // Convert to blob-like format
-      const blob = new Blob([fileData], { type: 'image/jpeg' });
-
+      // Get file extension (e.g., "jpg" or "png")
+      const fileInfo = await FileSystem.getInfoAsync(imageUri);
+      const fileExtension = fileInfo.uri.split('.').pop().toLowerCase();
+      const mimeType = `image/${fileExtension === 'jpg' ? 'jpeg' : fileExtension}`;
+  
+      // Read file as binary (Blob)
+      const blob = await fetch(imageUri).then(res => res.blob());
+  
+      // Upload with correct Content-Type
       const response = await fetch(presignedUrl, {
         method: 'PUT',
         body: blob,
-        headers: {
-          'Content-Type': 'image/jpeg', // Match what your backend expects
-        },
+        headers: { 'Content-Type': mimeType },
       });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Upload failed: ${errorText}`);
-      }
+  
+      if (!response.ok) throw new Error('Upload failed');
     } catch (error) {
-      console.error("Upload error:", error);
+      console.error('Upload error:', error);
       throw error;
     }
   };
@@ -82,7 +79,12 @@ export default function AddContent() {
       // Step 2: Upload image to S3
       await uploadImageToS3(presignedUrl, image);
 
-      Alert.alert("Success", "Your post has been uploaded!");
+      // Step 3: Get the public URL (remove query parameters from presigned URL)
+      const publicUrl = presignedUrl.split('?')[0];
+      console.log("Uploaded Image URL:", publicUrl); // Log to console
+      setUploadedImageUrl(publicUrl); // Store in state
+
+      Alert.alert("Success", `Your post has been uploaded!\nURL: ${publicUrl}`);
       setImage(null);
       setCaption("");
     } catch (error) {
@@ -135,18 +137,23 @@ export default function AddContent() {
               {isUploading ? "Uploading..." : "Post"}
             </Text>
           </TouchableOpacity>
+
+          {/* Display the uploaded URL */}
+          {uploadedImageUrl && (
+            <Text style={styles.urlText}>
+              Uploaded to: {uploadedImageUrl}
+            </Text>
+          )}
         </View>
       </ScrollView>
     </View>
   );
 }
 
-// Keep your existing styles...
-
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // This ensures the view takes up the entire screen
-    backgroundColor: '#f9fafe', // Set background color for the entire screen
+    flex: 1,
+    backgroundColor: '#f9fafe',
   },
   addContent: {
     alignItems: 'center',
@@ -154,12 +161,12 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   navbar: {
-    marginTop:25,
+    marginTop: 25,
     width: '100%',
     justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',
-   padding: 5,
+    padding: 5,
   },
   logo: {
     fontSize: 30,
@@ -173,49 +180,51 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     alignItems: 'center',
- },
+  },
   imageSelected: {
-  marginTop:15,
-  width: 350,
-  height: 380,
-  resizeMode: 'cover', // Optional: 'contain' or 'cover' depending on your layout need
-  borderRadius: 10,    // Optional for rounded corners
+    marginTop: 15,
+    width: 350,
+    height: 380,
+    resizeMode: 'cover',
+    borderRadius: 10,
   },
-customButton: {
-  backgroundColor: '#4a90e2',
-  paddingVertical: 12,
-  borderWidth:1,
-  borderRadius: 8,
-  marginTop: 20,
-},
-customButtonText: {
-  color: '#fff',
-  fontSize: 16,
-  fontWeight: '600',
-  textAlign: 'center',
+  customButton: {
+    backgroundColor: '#4a90e2',
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderRadius: 8,
+    marginTop: 20,
   },
-
-
-postTitle: {
-  fontSize: 18,
-  fontWeight: '700',
-  marginBottom: 12,
-  color: '#333',
-},
-
-input: {
-  borderColor: '#ddd',
-  borderWidth: 1,
-  borderRadius: 8,
-  padding: 12,
-  fontSize: 16,
-  backgroundColor: '#f5f5f5',
-  textAlignVertical: 'top',
-  height: 100,
-  marginBottom: 16,
+  customButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  postTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 12,
+    color: '#333',
+  },
+  input: {
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    backgroundColor: '#f5f5f5',
+    textAlignVertical: 'top',
+    height: 100,
+    marginBottom: 16,
   },
   postCard: {
-  width:"90%"
-}
-
+    width: "90%"
+  },
+  urlText: {
+    marginTop: 10,
+    color: '#4a90e2',
+    fontSize: 14,
+    textAlign: 'center',
+  }
 });
