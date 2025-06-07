@@ -197,15 +197,18 @@ export default function Homepage() {
           posts.map((post, index) => (
             <View key={index} style={styles.wrapContent}>
               <View style={styles.content}>
-                <View style={styles.contentHeader}>
-                  <Image source={require('../../assets/icon-profile.png')} style={{ width: 50, height: 50 }} />
-                  <Text style={{ marginLeft: 10 }}>{post.userId || 'Anonymous'}</Text>
-                </View>
-                <Text style={{ marginTop: 10 }}>{post.thoughts || 'No caption provided.'}</Text>
+              <View style={styles.contentHeader}>
+                <Image 
+                  source={{ uri: post.profile }} 
+                  style={{ width: 50, height: 50, resizeMode: 'cover', borderRadius: 25 }} 
+                />
+                <Text style={{ marginLeft: 10,fontSize:15 }}>{post.username || 'Anonymous'}</Text>
+              </View>
+                <Text style={{ marginTop: 18,fontWeight:'bold',marginBottom: 5 }}>{post.thoughts || 'No caption provided.'}</Text>
                 <View style={{ alignItems: "center", borderRadius: 10, overflow: 'hidden' }}>
                   <Image
                     source={{ uri: post.picture }}
-                    style={{ width: 350, height: 380, resizeMode: 'cover' }}
+                    style={{ width: 350, height: 380, resizeMode: 'cover',paddingTop: 10, }}
                   />
                 </View>
                 <View style={{ marginTop: 10, flexDirection: "row", justifyContent: 'space-between' }}>

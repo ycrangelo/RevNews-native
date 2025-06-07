@@ -5,13 +5,17 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
+import { useAppContext } from '../context/AppContext';
 
 export default function AddContent() {
   const [image, setImage] = useState(null);
   const [caption, setCaption] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedImageUrl, setUploadedImageUrl] = useState(null); // New state for the URL
-
+  const { userID, username, userPicture } = useAppContext();
+  console.log("this is userID " + userID)
+  console.log("this is username " + username)
+  console.log("this is userPicture "+ userPicture)
   // Pick an image from the gallery
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -69,26 +73,49 @@ export default function AddContent() {
       Alert.alert("Please select an image first");
       return;
     }
-
+  
     setIsUploading(true);
-
+  
     try {
       // Step 1: Get pre-signed URL from backend
       const presignedUrl = await getPresignedUrl();
-
+  
       // Step 2: Upload image to S3
       await uploadImageToS3(presignedUrl, image);
-
+  
       // Step 3: Get the public URL (remove query parameters from presigned URL)
       const publicUrl = presignedUrl.split('?')[0];
-      console.log("Uploaded Image URL:", publicUrl); // Log to console
-      setUploadedImageUrl(publicUrl); // Store in state
-
-      Alert.alert("Success", `Your post has been uploaded!\nURL: ${publicUrl}`);
+      console.log("Uploaded Image URL:", publicUrl);
+      setUploadedImageUrl(publicUrl);
+  
+      // Step 4: Create the post with the image URL and caption
+      const response = await fetch('https://juntosbackend.onrender.com/api/post/createPost', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: userID, // Replace with actual user ID
+          username: username, // Replace with actual username
+          thoughts: caption,
+          picture: publicUrl,
+          profile:userPicture
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to create post');
+      }
+  
+      const responseData = await response.json();
+      console.log("Post created:", responseData);
+  
+      Alert.alert("Success", "Your post has been created successfully!");
       setImage(null);
       setCaption("");
     } catch (error) {
-      Alert.alert("Error", "Failed to upload post. Please try again.");
+      console.error("Error:", error);
+      Alert.alert("Error", "Failed to create post. Please try again.");
     } finally {
       setIsUploading(false);
     }

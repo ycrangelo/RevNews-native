@@ -4,8 +4,8 @@ import { useAppContext } from '../../context/AppContext';
 
 export default function Navbar() {
   const { userID, username, userPicture } = useAppContext();
-  console.log("this is the userProfile") // This should log the URL
-  console.log(userPicture) // This should log the URL
+  // console.log("this is the userProfile") // This should log the URL
+  // console.log(userPicture) // This should log the URL
   
   return (
     <View style={styles.navbar}>
