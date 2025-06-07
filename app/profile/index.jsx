@@ -18,6 +18,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useEffect, useState, useRef } from 'react';
 import Navbar from '../components/navbar/index';
 import { useAppContext } from '../context/AppContext';
+import { Link, useRouter } from 'expo-router';
 
 export default function Profile() {
   const [selectedTab, setSelectedTab] = useState('posts');
@@ -30,8 +31,22 @@ export default function Profile() {
   const [commentText, setCommentText] = useState('');
   const [commentsList, setCommentsList] = useState([]);
   const [loadingComments, setLoadingComments] = useState(false);
-  
-  const { userID, username } = useAppContext();
+  const router = useRouter();
+  const { userID, username, logout } = useAppContext();
+
+  const handleLogout = () => {
+    logout();
+    // Reset all local state
+    setSelectedTab('posts');
+    setPosts([]);
+    setLikedPosts([]);
+    setSavedPosts([]);
+    setModalVisible(false);
+    setCurrentPostId(null);
+    setCommentText('');
+    setCommentsList([]);
+    router.push('/');
+  };
 
   useEffect(() => {
     if (selectedTab === 'saves') {
@@ -90,22 +105,22 @@ export default function Profile() {
     }
   };
 
-  const handleUnlike = async (postId) => {
-    try {
-      const res = await fetch('https://juntosbackend.onrender.com/api/post/unlikePost', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ postId }),
-      });
-      const data = await res.json();
-      setPosts(prev =>
-        prev.map(post => post._id === postId ? { ...post, likes: data.likes } : post)
-      );
-      setLikedPosts(prev => prev.filter(id => id !== postId));
-    } catch (error) {
-      console.error('Error unliking post:', error);
-    }
-  };
+  // const handleUnlike = async (postId) => {
+  //   try {
+  //     const res = await fetch('https://juntosbackend.onrender.com/api/post/unlikePost', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ postId }),
+  //     });
+  //     const data = await res.json();
+  //     setPosts(prev =>
+  //       prev.map(post => post._id === postId ? { ...post, likes: data.likes } : post)
+  //     );
+  //     setLikedPosts(prev => prev.filter(id => id !== postId));
+  //   } catch (error) {
+  //     console.error('Error unliking post:', error);
+  //   }
+  // };
 
   const fetchComments = async (postId) => {
     setLoadingComments(true);
@@ -173,33 +188,36 @@ export default function Profile() {
     }
   };
 
-  const handleUnsavePost = async (postId) => {
-    try {
-      const res = await fetch('https://juntosbackend.onrender.com/api/saves/deleteSavedPost', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: userID,
-          postId: postId
-        }),
-      });
-      if (res.ok) {
-        setSavedPosts(prev => prev.filter(id => id !== postId));
-        // If in saves tab, refresh the list
-        if (selectedTab === 'saves') {
-          fetchSavedPosts();
-        }
-      }
-    } catch (error) {
-      console.error('Error unsaving post:', error);
-    }
-  };
+  // const handleUnsavePost = async (postId) => {
+  //   try {
+  //     const res = await fetch('https://juntosbackend.onrender.com/api/saves/deleteSavedPost', {
+  //       method: 'DELETE',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({
+  //         userId: userID,
+  //         postId: postId
+  //       }),
+  //     });
+  //     if (res.ok) {
+  //       setSavedPosts(prev => prev.filter(id => id !== postId));
+  //       // If in saves tab, refresh the list
+  //       if (selectedTab === 'saves') {
+  //         fetchSavedPosts();
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('Error unsaving post:', error);
+  //   }
+  // };
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="default" />
       <View style={styles.navbar}>
         <Text style={styles.logo}>{username || 'Profile'}</Text>
+        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Tabs */}
@@ -464,5 +482,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
     padding: 10,
     borderRadius: 8,
+  },
+  logoutButton: {
+    marginTop: 20,
+    marginRight: 10,
+    padding: 8,
+    backgroundColor: '#ff4444',
+    borderRadius: 5,
+  },
+  logoutText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });

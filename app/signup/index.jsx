@@ -8,7 +8,10 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
+  Image,
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 
 export default function Login() {
   const [selected, setSelected] = useState('Male');
@@ -17,15 +20,93 @@ export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [image, setImage] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const router = useRouter();
 
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
+  const getPresignedUrl = async () => {
+    try {
+      const response = await fetch('https://juntosbackend.onrender.com/get-presigned-url');
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching presigned URL:", error);
+      throw error;
+    }
+  };
+
+const uploadImageToS3 = async (presignedUrl, imageUri) => {
+    try {
+      // Get file extension (e.g., "jpg" or "png")
+      const fileInfo = await FileSystem.getInfoAsync(imageUri);
+      const fileExtension = fileInfo.uri.split('.').pop().toLowerCase();
+      const mimeType = `image/${fileExtension === 'jpg' ? 'jpeg' : fileExtension}`;
+  
+      // Read file as binary (Blob)
+      const blob = await fetch(imageUri).then(res => res.blob());
+  
+      // Upload with correct Content-Type
+      const response = await fetch(presignedUrl, {
+        method: 'PUT',
+        body: blob,
+        headers: { 'Content-Type': mimeType },
+      });
+  
+      if (!response.ok) throw new Error('Upload failed');
+    } catch (error) {
+      console.error('Upload error:', error);
+      throw error;
+    }
+  };
+
   const handleLogin = async () => {
+    if (!fullname || !contactNumber || !username || !password) {
+      Alert.alert('Error', 'Please fill all fields');
+      return;
+    }
+
+    let profileImageUrl = '';
+    
+    if (image) {
+      setUploadingImage(true);
+      try {
+        // Get pre-signed URL from backend
+        const { url, fileName } = await getPresignedUrl();
+
+        // Upload image to S3
+        await uploadImageToS3(url, image);
+
+        // Construct the public URL
+        profileImageUrl = `https://ycrangelojuntos.s3.ap-southeast-2.amazonaws.com/${fileName}`;
+      } catch (error) {
+        Alert.alert("Error", "Failed to upload profile image. Please try again.");
+        setUploadingImage(false);
+        return;
+      } finally {
+        setUploadingImage(false);
+      }
+    }
+
     const payload = {
       username,
       fullname,
       gender: selected,
       contactNumber,
       password,
+      profile: profileImageUrl || undefined,
     };
   
     setLoading(true);
@@ -44,22 +125,17 @@ export default function Login() {
       if (contentType && contentType.includes('application/json')) {
         const data = await response.json();
         if (response.ok) {
-          Alert.alert('Success', ' created successfully!, Continue logging the account');
+          Alert.alert('Success', 'Account created successfully! Please login.');
           router.push('/');
-          console.log('User created:', data);
         } else {
           Alert.alert('Signup Failed', data.error || 'Something went wrong');
-          console.error('Signup failed:', data.error);
         }
       } else {
         const text = await response.text();
-        console.error('Non-JSON response:', text);
         Alert.alert('Server Error', 'Received unexpected response from server.');
       }
-  
     } catch (error) {
       Alert.alert('Error', 'Network or server issue');
-      console.error('Error during signup:', error);
     } finally {
       setLoading(false);
     }
@@ -75,6 +151,16 @@ export default function Login() {
   return (
     <View style={styles.container}>
       <Text style={styles.logo}>Sign Up</Text>
+
+      <TouchableOpacity onPress={pickImage} style={styles.imageUploadContainer}>
+        {image ? (
+          <Image source={{ uri: image }} style={styles.profileImage} />
+        ) : (
+          <View style={styles.profileImagePlaceholder}>
+            <Text style={styles.uploadText}>Tap to add profile photo</Text>
+          </View>
+        )}
+      </TouchableOpacity>
 
       <View style={styles.radioGroupContainer}>
         <Text style={styles.gender}>Gender</Text>
@@ -104,6 +190,7 @@ export default function Login() {
         placeholderTextColor="#ccc"
         value={contactNumber}
         onChangeText={setContactNumber}
+        keyboardType="phone-pad"
       />
       <TextInput
         style={styles.input}
@@ -121,8 +208,12 @@ export default function Login() {
         onChangeText={setPassword}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
-        {loading ? (
+      <TouchableOpacity 
+        style={styles.button} 
+        onPress={handleLogin} 
+        disabled={loading || uploadingImage}
+      >
+        {(loading || uploadingImage) ? (
           <ActivityIndicator color="#f9fafe" />
         ) : (
           <Text style={styles.buttonText}>Save</Text>
@@ -184,7 +275,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f9fafe',
   },
   button: {
-    marginTop: 150,
+    marginTop: 50,
     backgroundColor: "#3c90da",
     paddingVertical: 10,
     paddingHorizontal: 50,
@@ -194,5 +285,31 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#f9fafe',
     textAlign: 'center',
+  },
+  imageUploadContainer: {
+    marginBottom: 20,
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: '#3c90da',
+  },
+  profileImagePlaceholder: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#e1e5eb',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#3c90da',
+  },
+  uploadText: {
+    color: '#060d20',
+    fontSize: 12,
+    textAlign: 'center',
+    padding: 5,
   },
 });
