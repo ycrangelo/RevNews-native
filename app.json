@@ -20,7 +20,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/juntos-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.angeloyocoryocor.Juntos"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -34,6 +38,12 @@
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "23021779-a154-4672-9962-8dacf679f8aa"
+      }
+    }
   }
 }
