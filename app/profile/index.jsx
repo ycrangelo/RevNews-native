@@ -427,6 +427,7 @@ const styles = StyleSheet.create({
   },
   navbar: {
     width: '100%',
+    marginTop: 15,
     justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',

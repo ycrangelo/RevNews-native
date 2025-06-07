@@ -35,9 +35,9 @@ function Login() {
 
       if (response.data.message === 'Login successful') {
         const userData = {
-          userID: response.data.user._id,
+          userID: response.data.user.id,
           username: response.data.user.username,
-          profilePicture: response.data.user.profilePicture
+          profilePicture: response.data.user.profile
         };
         console.log('Login successful, user data:', userData);
         updateUserData(userData);
