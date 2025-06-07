@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "inspo",
-    "slug": "inspo",
-    "scheme": "inspo",
+    "name": "Juntos",
+    "slug": "Juntos",
+    "scheme": "Juntos",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/juntos-icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -18,7 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/juntos-icon.png",
         "backgroundColor": "#ffffff"
       }
     },
