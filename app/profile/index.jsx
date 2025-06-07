@@ -74,16 +74,23 @@ export default function Profile() {
       setLoading(false);
     }
   };
-
   const fetchUserPosts = async () => {
+    console.log("this is the useid"+ userID)
     setLoading(true);
     try {
-      const res = await fetch(`https://juntosbackend.onrender.com/api/post/getUserPosts/${userID}`);
+      const res = await fetch('https://juntosbackend.onrender.com/api/post/getUserPost/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: userID }),
+      });
+
       const data = await res.json();
       setPosts(data);
       setLoading(false);
-    } catch (error) {
-      console.error('Error fetching user posts:', error);
+    } catch (err) {
+      console.error('Failed to fetch saved posts:', err);
       setLoading(false);
     }
   };

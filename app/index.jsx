@@ -10,11 +10,11 @@ function Login() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { updateUserData, isLoggedIn } = useAppContext();
+  const { updateUserData, isLoggedIn, userID,profilePicture} = useAppContext();
 
   // Check if user is already logged in
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isLoggedIn || userID || profilePicture) {
       router.push('/homepage');
     }
   }, [isLoggedIn]);

@@ -32,8 +32,8 @@ export default function Homepage() {
   const [loadingComments, setLoadingComments] = useState(false);
 
   const scrollRef = useRef(null);
-  const { userID, username } = useAppContext();
-
+  const { userID, username,userPicture } = useAppContext();
+  // console.log("this is userPicture "+ userPicture)
   const fetchPosts = async () => {
     try {
       const res = await fetch('https://juntosbackend.onrender.com/api/post/getAllPost');
@@ -127,6 +127,7 @@ export default function Homepage() {
         body: JSON.stringify({
           postId: currentPostId,
           userId: userID,
+          profile:userPicture,
           username: username,
           comment: commentText
         }),
@@ -256,37 +257,54 @@ export default function Homepage() {
       </View>
 
       <Modal visible={modalVisible} animationType="slide" transparent={true}>
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <ScrollView>
-              {loadingComments ? (
-                <ActivityIndicator size="small" color="#000" />
-              ) : (
-                commentsList.map((comment, index) => (
-                  <View key={index} style={styles.comment}>
-                    <Text style={styles.commentUser}>{comment.username || "User"}</Text>
-                    <Text>{comment.comment}</Text>
+  <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.modalOverlay}>
+    <View style={styles.modalContainer}>
+      <ScrollView>
+        {loadingComments ? (
+          <ActivityIndicator size="small" color="#000" />
+        ) : (
+          commentsList.map((comment, index) => (
+            <View key={index} style={styles.commentContainer}>
+              {/* User Avatar */}
+              <View style={styles.avatarContainer}>
+                {comment.profile ? (
+                  <Image 
+                    source={{ uri: comment.profile }} 
+                    style={styles.avatar}
+                  />
+                ) : (
+                  <View style={[styles.avatar, styles.defaultAvatar]}>
+                    <FontAwesome5 name="user" size={16} color="white" />
                   </View>
-                ))
-              )}
-            </ScrollView>
-            <View style={styles.inputContainer}>
-              <TextInput
-                value={commentText}
-                onChangeText={setCommentText}
-                placeholder="Write a comment..."
-                style={styles.input}
-              />
-              <TouchableOpacity onPress={sendComment} style={styles.sendButton}>
-                <Text style={{ color: 'white' }}>Send</Text>
-              </TouchableOpacity>
+                )}
+              </View>
+              
+              {/* Comment Content */}
+              <View style={styles.commentContent}>
+                <Text style={styles.commentUser}>{comment.username || "User"}</Text>
+                <Text style={styles.commentText}>{comment.comment}</Text>
+              </View>
             </View>
-            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
-              <Text style={{ color: 'white' }}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </KeyboardAvoidingView>
-      </Modal>
+          ))
+        )}
+      </ScrollView>
+      <View style={styles.inputContainer}>
+        <TextInput
+          value={commentText}
+          onChangeText={setCommentText}
+          placeholder="Write a comment..."
+          style={styles.input}
+        />
+        <TouchableOpacity onPress={sendComment} style={styles.sendButton}>
+          <Text style={{ color: 'white' }}>Send</Text>
+        </TouchableOpacity>
+      </View>
+      <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
+        <Text style={{ color: 'white' }}>Close</Text>
+      </TouchableOpacity>
+    </View>
+  </KeyboardAvoidingView>
+</Modal>
     </View>
   );
 }
@@ -365,5 +383,38 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
     padding: 10,
     borderRadius: 8,
+  },
+  commentContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 15,
+    paddingHorizontal: 10,
+  },
+  avatarContainer: {
+    marginRight: 10,
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#4a90e2',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  defaultAvatar: {
+    backgroundColor: '#cccccc',
+  },
+  commentContent: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+    padding: 10,
+    borderRadius: 10,
+  },
+  commentUser: {
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  commentText: {
+    color: '#333',
   },
 });

@@ -6,16 +6,18 @@ import { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import { useAppContext } from '../context/AppContext';
+import { Link, useRouter } from 'expo-router';
 
 export default function AddContent() {
+  const router = useRouter();
   const [image, setImage] = useState(null);
   const [caption, setCaption] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedImageUrl, setUploadedImageUrl] = useState(null); // New state for the URL
   const { userID, username, userPicture } = useAppContext();
-  console.log("this is userID " + userID)
-  console.log("this is username " + username)
-  console.log("this is userPicture "+ userPicture)
+  // console.log("this is userID " + userID)
+  // console.log("this is username " + username)
+  // console.log("this is userPicture "+ userPicture)
   // Pick an image from the gallery
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -69,8 +71,8 @@ export default function AddContent() {
 
   // Handle the full upload process
   const handlePost = async () => {
-    if (!image) {
-      Alert.alert("Please select an image first");
+    if (!image || !caption) {
+      Alert.alert("Please select an image or caption first");
       return;
     }
   
@@ -111,8 +113,9 @@ export default function AddContent() {
       console.log("Post created:", responseData);
   
       Alert.alert("Success", "Your post has been created successfully!");
-      setImage(null);
+      setImage("");
       setCaption("");
+      router.push('/homepage');
     } catch (error) {
       console.error("Error:", error);
       Alert.alert("Error", "Failed to create post. Please try again.");
@@ -166,11 +169,11 @@ export default function AddContent() {
           </TouchableOpacity>
 
           {/* Display the uploaded URL */}
-          {uploadedImageUrl && (
+          {/* {uploadedImageUrl && (
             <Text style={styles.urlText}>
               Uploaded to: {uploadedImageUrl}
             </Text>
-          )}
+          )} */}
         </View>
       </ScrollView>
     </View>

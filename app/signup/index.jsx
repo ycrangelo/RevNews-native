@@ -126,6 +126,7 @@ const uploadImageToS3 = async (presignedUrl, imageUri) => {
         const data = await response.json();
         if (response.ok) {
           Alert.alert('Success', 'Account created successfully! Please login.');
+          setImage("")
           router.push('/');
         } else {
           Alert.alert('Signup Failed', data.error || 'Something went wrong');
