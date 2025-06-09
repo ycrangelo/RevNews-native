@@ -73,7 +73,7 @@ const uploadImageToS3 = async (presignedUrl, imageUri) => {
   };
 
   const handleLogin = async () => {
-    if (!fullname || !contactNumber || !username || !password) {
+    if (!fullname || !contactNumber || !username || !password || !image) {
       Alert.alert('Error', 'Please fill all fields');
       return;
     }
